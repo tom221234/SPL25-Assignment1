@@ -113,7 +113,7 @@ AudioTrack::AudioTrack(AudioTrack&& other) noexcept {
 
     // Delete Data from Other
     other.waveform_data = nullptr;
-    other.waveform_size = 0;
+    other.waveform_size = 0; //?
 }
 
 // Move Assigment Operator
@@ -126,10 +126,11 @@ AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
     if (this == &other){
         return *this;
     }
+
     // Reset the WaveForm Data
     delete[] waveform_data;
     waveform_data = nullptr;
-    waveform_size = 0;
+    waveform_size = 0; //?
 
     // Move all of the data
     this->title = std::move(other.title);
@@ -144,6 +145,8 @@ AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
     // Delete Data from Other
     other.waveform_data = nullptr;
     other.waveform_size = 0;
+
+    // Return this
     return *this;
 }
 
