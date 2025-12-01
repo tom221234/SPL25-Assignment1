@@ -30,47 +30,120 @@ AudioTrack::AudioTrack(const std::string& title, const std::vector<std::string>&
 
 // ========== TODO: STUDENTS IMPLEMENT RULE OF 5 ==========
 
+// Destructor
 AudioTrack::~AudioTrack() {
-    // TODO: Implement the destructor
     #ifdef DEBUG
     std::cout << "AudioTrack destructor called for: " << title << std::endl;
     #endif
-    // Your code here...
+
+    // Reset the WaveForm Data
+    delete[] waveform_data;
+    waveform_data = nullptr;
+    waveform_size = 0;
 }
 
+// Copy Constructor
 AudioTrack::AudioTrack(const AudioTrack& other)
 {
-    // TODO: Implement the copy constructor
     #ifdef DEBUG
     std::cout << "AudioTrack copy constructor called for: " << other.title << std::endl;
     #endif
-    // Your code here...
+
+    // Copy all of the data
+    this->title = other.title;
+    this->artists = other.artists;
+    this->duration_seconds = other.duration_seconds;
+    this->bpm = other.bpm;
+    this->waveform_size = other.waveform_size;
+
+    // Deep copy waveform_data
+    this->waveform_data = new double[this->waveform_size];
+    for (size_t i = 0; i < this->waveform_size; i++)  {
+        this->waveform_data[i] = other.waveform_data[i];
+    }
 }
 
-AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
-    // TODO: Implement the copy assignment operator
+// Copy Assigment Operator
+AudioTrack& AudioTrack::operator=(const AudioTrack& other) {    
     #ifdef DEBUG
     std::cout << "AudioTrack copy assignment called for: " << other.title << std::endl;
     #endif
-    // Your code here...
+
+    // Self Assignment Guard
+    if (this == &other){
+        return *this;
+    }
+
+    // Delete the old data
+    delete[] waveform_data;
+    waveform_data = nullptr;
+
+    // Copy all of the data
+    this->title = other.title;
+    this->artists = other.artists;
+    this->duration_seconds = other.duration_seconds;
+    this->bpm = other.bpm;
+    this->waveform_size = other.waveform_size;
+
+    // Deep copy waveform_data
+    this->waveform_data = new double[this->waveform_size];
+    for (size_t i = 0; i < this->waveform_size; i++)  {
+        this->waveform_data[i] = other.waveform_data[i];
+    }
+
+    // Return this
     return *this;
 }
 
+// Move Constructor
 AudioTrack::AudioTrack(AudioTrack&& other) noexcept {
-    // TODO: Implement the move constructor
     #ifdef DEBUG
     std::cout << "AudioTrack move constructor called for: " << other.title << std::endl;
     #endif
-    // Your code here...
+
+    // Move all of the data
+    this->title = std::move(other.title);
+    this->artists = std::move(other.artists);
+    this->duration_seconds = std::move(other.duration_seconds);
+    this->bpm = std::move(other.bpm);
+    this->waveform_size = std::move(other.waveform_size);
+
+    // Steal the pointer from Other
+    this->waveform_data = other.waveform_data;
+
+    // Delete Data from Other
+    other.waveform_data = nullptr;
+    other.waveform_size = 0;
 }
 
+// Move Assigment Operator
 AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
-    // TODO: Implement the move assignment operator
-
     #ifdef DEBUG
     std::cout << "AudioTrack move assignment called for: " << other.title << std::endl;
     #endif
-    // Your code here...
+
+    // Self Assignment Guard
+    if (this == &other){
+        return *this;
+    }
+    // Reset the WaveForm Data
+    delete[] waveform_data;
+    waveform_data = nullptr;
+    waveform_size = 0;
+
+    // Move all of the data
+    this->title = std::move(other.title);
+    this->artists = std::move(other.artists);
+    this->duration_seconds = std::move(other.duration_seconds);
+    this->bpm = std::move(other.bpm);
+    this->waveform_size = std::move(other.waveform_size);
+
+    // Steal the pointer from Other
+    this->waveform_data = other.waveform_data;
+
+    // Delete Data from Other
+    other.waveform_data = nullptr;
+    other.waveform_size = 0;
     return *this;
 }
 
