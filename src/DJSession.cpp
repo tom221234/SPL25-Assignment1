@@ -72,8 +72,32 @@ bool DJSession::load_playlist(const std::string& playlist_name)  {
 
  */
 int DJSession::load_track_to_controller(const std::string& track_name) {
-    // Your implementation here
-    return 0; // Placeholder
+
+    // Find track in library
+    AudioTrack* trackToBeLoaded = library_service.findTrack(track_name);
+
+    // If track not found
+    if (!trackToBeLoaded){
+        std::cout << "[ERROR] Track: " << track_name << " not found in library" << std::endl;
+        stats.errors++; // is this how to Increment stats.errors? im not sure
+        return 0;       
+    }
+
+    // Log loading message
+    std::cout << "[System] Loading track " << track_name << std::endl;
+
+    // Load track to cache and save the result
+    int result = controller_service.loadTrackToCache(*trackToBeLoaded);
+
+    // increase counters based on result
+    if (result == 1) stats.cache_hits++;           // Cache HIT 
+
+    else stats.cache_misses++;                     // Else cache MISS
+
+    if (result == -1) stats.cache_evictions++;      // Eviction Happend
+
+    // Return the cache result
+    return result;
 }
 
 /**
@@ -84,8 +108,34 @@ int DJSession::load_track_to_controller(const std::string& track_name) {
  */
 bool DJSession::load_track_to_mixer_deck(const std::string& track_title) {
     std::cout << "[System] Delegating track transfer to MixingEngineService for: " << track_title << std::endl;
-    // your implementation here
-    return false; // Placeholder
+
+    // Retrieve track from cache
+    AudioTrack* track = controller_service.getTrackFromCache(track_title);
+
+    // If track not in cache: 
+    if (!track){
+        std::cout << "[ERROR] Track: " << track_title << " not found in cache" << std::endl;
+        stats.errors++;
+        return false;
+    } 
+
+    // Initalize result
+    int result = mixing_service.loadTrackToDeck(*track);
+
+    // if loadTrackToDeck failed to load the track:
+    if (result == -1){
+        std::cout << "[ERROR] Failed to load track " << track_title << " to any mixer deck" << std::endl; //        // im now sure on the msg of error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        stats.errors++;
+        return false;
+    }
+
+    // Counters updates
+    stats.transitions++;                         // Track loaded into one of the decks - update counter
+    if (result == 0 ) stats.deck_loads_a++;      // Track Loaded into deck 0 -> update the counter a
+    else if (result == 1)  stats.deck_loads_b++; // Track Loaded into deck 1 -> update the counter b
+
+    // Track loaded -> return true
+    return true;
 }
 
 /**
@@ -142,6 +192,7 @@ bool DJSession::load_configuration() {
     std::cout << "Cache Size: " << session_config.controller_cache_size << " slots" << std::endl;
     mixing_service.set_auto_sync(session_config.auto_sync);
     mixing_service.set_bpm_tolerance(session_config.bpm_tolerance);
+
     //update cache size in LRUCache
     controller_service.set_cache_size(session_config.controller_cache_size);
     return true;

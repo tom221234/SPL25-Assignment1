@@ -10,8 +10,31 @@ DJControllerService::DJControllerService(size_t cache_size)
  * TODO: Implement loadTrackToCache method
  */
 int DJControllerService::loadTrackToCache(AudioTrack& track) {
-    // Your implementation here 
-    return 0; // Placeholder
+    // check if track is in cache already (HIT)
+
+    if (cache.contains(track.get_title())){   
+        cache.get(track.get_title());     // if true reset the MRU 
+        return 1;
+    }
+    // creaating a clone of the song (if MISS)
+    PointerWrapper<AudioTrack> wrappedClone = track.clone();
+    // unwraping the pointer to be a raw pointer (.release)
+    AudioTrack* rawClone = wrappedClone.release();
+    // if the unwraped pointer is null rasie error
+    if(rawClone == nullptr) {
+        std::cerr << "[ERROR] Track: \"" << track.get_title() << "\" failed to clone" << std::endl;
+        return 0;
+    }
+    rawClone->load(); //loading song
+    rawClone->analyze_beatgrid(); // beatgrid check
+
+    // the result from cache.put() - True of False
+    bool result = cache.put(PointerWrapper<AudioTrack>(rawClone));
+    
+    if (result) { 
+        return -1; // if result == true it means that the cache was full removal from the cache was needed - return -1
+    }
+    return 0; // if no removal was needed, there was a free slot in cache - return 0
 }
 
 void DJControllerService::set_cache_size(size_t new_size) {
@@ -28,6 +51,6 @@ void DJControllerService::displayCacheStatus() const {
  * TODO: Implement getTrackFromCache method
  */
 AudioTrack* DJControllerService::getTrackFromCache(const std::string& track_title) {
-    // Your implementation here
-    return nullptr; // Placeholder
+    // if song name found, return it. otherwise get() will return "nullptr"
+    return cache.get(track_title);
 }

@@ -12,6 +12,7 @@ void CacheSlot::store(PointerWrapper<AudioTrack> track_ptr, uint64_t access_time
     occupied = true;
 }
 
+// updates access_time 
 AudioTrack* CacheSlot::access(uint64_t access_time) {
     if (!occupied) {
         return nullptr;
@@ -21,6 +22,7 @@ AudioTrack* CacheSlot::access(uint64_t access_time) {
     return track.get();
 }
 
+// 
 void CacheSlot::clear() {
     track.reset(nullptr);
     occupied = false;
