@@ -46,7 +46,7 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
         return -1;
     }
 
-    int target_deck; 
+    size_t target_deck; // size t or int
 
     // finding the deck we want to load 
     if (decks[0] == nullptr and decks[1] == nullptr){

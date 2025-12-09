@@ -27,6 +27,7 @@ struct ControllerStats {
  */
 class DJSession {
 private:
+
     // Session identification
     std::string session_name;
 
@@ -40,6 +41,7 @@ private:
     SessionConfig session_config;
     std::vector<std::string> track_titles;
     bool play_all;
+
     // Session statistics
     struct SessionStats {
         size_t tracks_processed = 0;
@@ -103,6 +105,9 @@ public:
     // TODO: Add more status and display methods as needed, delegating to services
 
 private:
+    // Helpers that we've built
+    bool process_playlist(const std::string& playlist_name);
+
     // ========== PROVIDED HELPER METHODS (Menu and Config) ==========
     
     /**
