@@ -84,10 +84,13 @@ int DJSession::load_track_to_controller(const std::string& track_name) {
     }
 
     // Log loading message
-    std::cout << "[System] Loading track " << track_name << std::endl;
+    std::cout << "[System] Loading track '" << track_name << "' to controller..." << std::endl;
 
     // Load track to cache and save the result
     int result = controller_service.loadTrackToCache(*trackToBeLoaded);
+
+    // Display cache status after loading
+    controller_service.displayCacheStatus();
 
     // increase counters based on result
     if (result == 1) stats.cache_hits++;           // Cache HIT 
@@ -129,6 +132,9 @@ bool DJSession::load_track_to_mixer_deck(const std::string& track_title) {
         return false;
     }
 
+    // Display deck status after loading !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    mixing_service.displayDeckStatus();
+
     // Counters updates
     stats.transitions++;                         // Track loaded into one of the decks - update counter
     if (result == 0 ) stats.deck_loads_a++;      // Track Loaded into deck 0 -> update the counter a
@@ -160,7 +166,7 @@ bool DJSession::process_playlist(const std::string& playlist_name){
     for (const auto& track_title : track_titles) {
 
         // Track Processing Phase:
-        std::cout << "\n-- Processing: <" << track_title << "> --" << std::endl;
+        std::cout << "\n--- Processing: " << track_title << " ---" << std::endl;
         stats.tracks_processed++;
 
         // Cache Loading Phase:
@@ -175,14 +181,14 @@ bool DJSession::process_playlist(const std::string& playlist_name){
     print_session_summary();
 
     // Reset all stats
-    stats.tracks_processed = 0;
-    stats.cache_hits       = 0;
-    stats.cache_misses     = 0;
-    stats.cache_evictions  = 0;
-    stats.deck_loads_a     = 0;
-    stats.deck_loads_b     = 0;
-    stats.transitions      = 0;
-    stats.errors           = 0;
+    //stats.tracks_processed = 0;
+    //stats.cache_hits       = 0;
+    //stats.cache_misses     = 0;
+    //stats.cache_evictions  = 0;
+    //stats.deck_loads_a     = 0;
+    //stats.deck_loads_b     = 0;
+    //stats.transitions      = 0;
+    // stats.errors           = 0;
 
     return true;
 }
@@ -215,8 +221,6 @@ void DJSession::simulate_dj_performance() {
     std::cout << "Cache Capacity: " << session_config.controller_cache_size << " slots (LRU policy)" << std::endl;
     std::cout << "\n--- Processing Tracks ---" << std::endl;
 
-    std::cout << "TODO: Implement the DJ performance simulation workflow here." << std::endl;
-
     while (true) 
     {
         if (play_all) {
@@ -241,47 +245,8 @@ void DJSession::simulate_dj_performance() {
             process_playlist(playlist_name);
             }
         }
-
-    // 5. Statistics Tracking Requirements:
-        // • Cache misses: Count both with and without eviction (a MISS with eviction increments both cache_misses and cache_evictions)
-        // • Transitions: Increment whenever a track successfully loads to either deck
-        // • Errors: Track failures at any stage (library lookup, cache access, deck loading, clone failures)
-        // • Tracks processed: Total tracks attempted (regardless of success/failure)
-
     
-    // 6. Error Handling Requirements:
-        // • Abort early if configuration parsing fails or no playlists are found
-        // • Log all errors with format: [ERROR] <Context>: "<identifier>" <description>
-        // • Skip individual track failures gracefully without stopping the session
-        // • Continue processing remaining tracks even after errors
-        // • Ensure all errors are counted in stats.errors
-
-
-
-
-
-
-
-        
-        
-        
-        // (c) For Each Selected Playlist:
-            // i. Call load_playlist(playlist_name)
-            // ii. If load fails, log error and continue to next playlist (or prompt again in interactive mode)
-
-            // iii. Track Processing Loop - for each track in track_titles:
-                // • Log: \n–- Processing: <track_title> –-
-                // • Increment stats.tracks_processed
-                // • Cache Loading Phase:
-                    // - load the track to controller using load_track_to_controller(track_title)
-                    // – update the cache statistics based on the return value
-                // • Deck Loading Phase:
-                    // – Call load_track_to_mixer_deck(track_title) and update the deck and transition statistics based on the return value
-                    // – If load fails, continue to next track (error already logged and counted)
-
-            // iv. After all tracks processed, call print_session_summary()
-            // v. Reset statistics for next playlist: set all stats members to 0
-
+    std::cout << "Session cancelled by user or all playlists played." << std::endl;
 }
 
 

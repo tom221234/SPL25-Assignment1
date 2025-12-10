@@ -75,8 +75,7 @@ public:
      * HINT: How should ownership transfer from one wrapper to another?
      * What should happen to the source wrapper after the move? ITAMAR: - after the move, the source wrapper should be nullptr.
      */
-    PointerWrapper(PointerWrapper&& other) noexcept {
-        ptr = other.ptr;     // change ownership
+    PointerWrapper(PointerWrapper&& other) noexcept : ptr(other.ptr) {
         other.ptr = nullptr; // Leave other in a null state
     }
 

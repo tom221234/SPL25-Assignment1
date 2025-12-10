@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <filesystem>
+#include <algorithm>
 
 
 DJLibraryService::DJLibraryService(const Playlist& playlist) 
@@ -59,7 +60,7 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
             library.push_back(new_track);
         }
     }
-    std::cout << "[INFO] Track library built: " << library_tracks.size() << "tracks loaded" << std::endl;
+    std::cout << "[INFO] Track library built: " << library_tracks.size() << " tracks loaded" << std::endl;
 }
 
 /**
@@ -106,8 +107,8 @@ AudioTrack* DJLibraryService::findTrack(const std::string& track_title) {
 void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,const std::vector<int>& track_indices) {
 
     // create new Playlist with the given name
-    std::cout << "[INFO] Loading playlist:" << playlist_name << std::endl;
-    this->playlist= Playlist(playlist_name);
+    std::cout << "[INFO] Loading playlist: " << playlist_name << std::endl;
+    this->playlist = Playlist(playlist_name);
     
     //  iterate over track_indices
     for (int index: track_indices) {
@@ -135,7 +136,7 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
 
     }
         // printing the loading message 
-    std::cout << "[INFO] Playlist loaded: " << playlist_name << " (" << playlist.get_track_count() << "tracks" << std::endl;
+    std::cout << "[INFO] Playlist loaded: " << playlist_name << " (" << playlist.get_track_count() << " tracks)" << std::endl;
 
 
 
@@ -155,6 +156,9 @@ std::vector<std::string> DJLibraryService::getTrackTitles() const {
             track_titles.push_back(track_ptr->get_title());  // adding the track title to the new titles vector
         }
     }
+
+    // Reverse to get insertion order (add_track adds to front of linked list)
+    std::reverse(track_titles.begin(), track_titles.end());
 
     return track_titles;  // return vector of track titles as asked 
 }

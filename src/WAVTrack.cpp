@@ -53,7 +53,11 @@ double WAVTrack::get_quality_score() const {
 
     if (quality >= 100.0) quality = 100.0;
     
-    return quality; // Replace with your implementation
+    #ifdef DEBUG
+    std::cout << "[WAVTrack::get_quality_score] \"" << title << "\" score = " << (int)quality << "/100" << std::endl;
+    #endif
+    
+    return quality;
 }
 
 PointerWrapper<AudioTrack> WAVTrack::clone() const {

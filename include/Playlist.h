@@ -41,6 +41,16 @@ public:
     ~Playlist();
 
     /**
+     * Copy constructor - deep copy of all nodes and tracks
+     */
+    Playlist(const Playlist& other);
+
+    /**
+     * Copy assignment operator - deep copy of all nodes and tracks
+     */
+    Playlist& operator=(const Playlist& other);
+
+    /**
      * Add a track to the playlist
      * @param track Pointer to AudioTrack to add
      */

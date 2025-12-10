@@ -15,6 +15,10 @@ private:
     size_t active_deck;
     bool auto_sync;
     int bpm_tolerance;
+
+    // Rule of Three: prevent shallow copy of raw pointer array
+    MixingEngineService(const MixingEngineService&);
+    MixingEngineService& operator=(const MixingEngineService&);
 public:
     MixingEngineService();
     ~MixingEngineService();

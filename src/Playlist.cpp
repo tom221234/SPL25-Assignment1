@@ -26,6 +26,67 @@ Playlist::~Playlist() {
     #endif
 }
 
+// Copy constructor - deep copy
+Playlist::Playlist(const Playlist& other) 
+    : head(nullptr), playlist_name(other.playlist_name), track_count(0) {
+    // Deep copy all nodes and tracks
+    PlaylistNode* current = other.head;
+    PlaylistNode* last = nullptr;
+    
+    while (current != nullptr) {
+        // Clone the track
+        PointerWrapper<AudioTrack> cloned_track = current->track->clone();
+        if (cloned_track) {
+            PlaylistNode* new_node = new PlaylistNode(cloned_track.release());
+            if (last == nullptr) {
+                head = new_node;
+            } else {
+                last->next = new_node;
+            }
+            last = new_node;
+            track_count++;
+        }
+        current = current->next;
+    }
+}
+
+// Copy assignment operator - deep copy
+Playlist& Playlist::operator=(const Playlist& other) {
+    if (this != &other) {
+        // Clear existing data
+        PlaylistNode* current = head;
+        while (current != nullptr) {
+            PlaylistNode* next = current->next;
+            delete current->track;
+            delete current;
+            current = next;
+        }
+        head = nullptr;
+        track_count = 0;
+        
+        // Copy from other
+        playlist_name = other.playlist_name;
+        PlaylistNode* src = other.head;
+        PlaylistNode* last = nullptr;
+        
+        while (src != nullptr) {
+            PointerWrapper<AudioTrack> cloned_track = src->track->clone();
+            if (cloned_track) {
+                PlaylistNode* new_node = new PlaylistNode(cloned_track.release());
+                if (last == nullptr) {
+                    head = new_node;
+                } else {
+                    last->next = new_node;
+                }
+                last = new_node;
+                track_count++;
+            }
+            src = src->next;
+        }
+    }
+    return *this;
+}
+
 void Playlist::add_track(AudioTrack* track) {
     if (!track) {
         std::cout << "[Error] Cannot add null track to playlist" << std::endl;

@@ -42,9 +42,9 @@ void DJControllerService::set_cache_size(size_t new_size) {
 }
 //implemented
 void DJControllerService::displayCacheStatus() const {
-    std::cout << "\n=== Cache Status ===\n";
+    std::cout << "\n=== Cache Status ===" << std::endl;
     cache.displayStatus();
-    std::cout << "====================\n";
+    std::cout << "====================" << std::endl;
 }
 
 /**

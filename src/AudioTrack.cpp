@@ -44,22 +44,20 @@ AudioTrack::~AudioTrack() {
 
 // Copy Constructor
 AudioTrack::AudioTrack(const AudioTrack& other)
+    : title(other.title), artists(other.artists), 
+      duration_seconds(other.duration_seconds), bpm(other.bpm),
+      waveform_data(nullptr), waveform_size(other.waveform_size)
 {
     #ifdef DEBUG
     std::cout << "AudioTrack copy constructor called for: " << other.title << std::endl;
     #endif
 
-    // Copy all of the data
-    this->title = other.title;
-    this->artists = other.artists;
-    this->duration_seconds = other.duration_seconds;
-    this->bpm = other.bpm;
-    this->waveform_size = other.waveform_size;
-
     // Deep copy waveform_data
-    this->waveform_data = new double[this->waveform_size];
-    for (size_t i = 0; i < this->waveform_size; i++)  {
-        this->waveform_data[i] = other.waveform_data[i];
+    if (waveform_size > 0) {
+        waveform_data = new double[waveform_size];
+        for (size_t i = 0; i < waveform_size; i++) {
+            waveform_data[i] = other.waveform_data[i];
+        }
     }
 }
 
@@ -96,24 +94,18 @@ AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
 }
 
 // Move Constructor
-AudioTrack::AudioTrack(AudioTrack&& other) noexcept {
+AudioTrack::AudioTrack(AudioTrack&& other) noexcept
+    : title(std::move(other.title)), artists(std::move(other.artists)),
+      duration_seconds(other.duration_seconds), bpm(other.bpm),
+      waveform_data(other.waveform_data), waveform_size(other.waveform_size)
+{
     #ifdef DEBUG
     std::cout << "AudioTrack move constructor called for: " << other.title << std::endl;
     #endif
 
-    // Move all of the data
-    this->title = std::move(other.title);
-    this->artists = std::move(other.artists);
-    this->duration_seconds = std::move(other.duration_seconds);
-    this->bpm = std::move(other.bpm);
-    this->waveform_size = std::move(other.waveform_size);
-
-    // Steal the pointer from Other
-    this->waveform_data = other.waveform_data;
-
-    // Delete Data from Other
+    // Reset other's data
     other.waveform_data = nullptr;
-    other.waveform_size = 0; //?
+    other.waveform_size = 0;
 }
 
 // Move Assigment Operator

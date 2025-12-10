@@ -18,7 +18,7 @@ void MP3Track::load() {
     // TODO: Implement MP3 loading with format-specific operations
     // NOTE: Use exactly 2 spaces before the arrow (→) character
     if (has_id3_tags) {
-        std::cout << "Processing ID3 metadata (artist info, album art, etc.)..." << std::endl;
+        std::cout << "  → Processing ID3 metadata (artist info, album art, etc.)..." << std::endl;
 
     } else {
         std::cout << "  → No ID3 tags found" << std::endl;
@@ -61,9 +61,15 @@ double MP3Track::get_quality_score() const {
     if (quality < 0.0) {
         quality = 0.0;
     }
+    
+    #ifdef DEBUG
+    std::cout << "[MP3Track::get_quality_score] \"" << title << "\" score = " << (int)quality << "/100" << std::endl;
+    #endif
 
-    return quality; // Replace with your implementation
+    return quality;
 }
+    
+
 
 PointerWrapper<AudioTrack> MP3Track::clone() const {
     // TODO: Implement polymorphic cloning
